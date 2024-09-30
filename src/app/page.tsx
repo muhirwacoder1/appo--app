@@ -1,7 +1,10 @@
-import { DashboardComponent } from "@/components/dashboard";
+import ClientOnly from '@/components/ClientOnly'
+import { DashboardComponent } from '@/components/dashboard'
 
-export default function Page() {
+export default function Home() {
   return (
-    <DashboardComponent />
+    <ClientOnly>
+      <DashboardComponent />
+    </ClientOnly>
   )
 }

@@ -1,28 +1,30 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, ChevronRight, LogOut, Search, Settings, User, Thermometer, Clock, Battery, Gauge, Wifi, Bluetooth, Heart, AlertCircle, Activity, Link as LinkIcon, Calendar as CalendarIcon, Video, Users, Camera, Menu, Moon, Sun, LayoutDashboard } from 'lucide-react'
+import { Bell, LogOut, Search, Settings, User, Thermometer, Clock, Gauge, Wifi, Bluetooth, Heart, AlertCircle, Activity, Link as LinkIcon, Calendar as CalendarIcon, Video, Users, Camera, Moon, Sun, LayoutDashboard } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid"
-import { MessageSquare, UserPlus } from 'lucide-react'
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Lock, Globe, Shield, Smartphone } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { DiabetesMonitorComponent } from "@/components/diabetes-monitor"
+import { FootUlcerRiskChart } from "@/components/foot-ulcer-risk-chart"
+import { Component as RadialPressureChart } from "@/components/chart-radial-text"
+import { TemperatureWidget } from "@/components/temperature-widget"
+import { RuntimeWidget } from "@/components/runtime-widget"
 
 const CircularProgress = ({ value, max, icon: Icon, label, unit }: { 
   value: number; 
@@ -35,21 +37,19 @@ const CircularProgress = ({ value, max, icon: Icon, label, unit }: {
     <div className="relative">
       <svg className="w-24 h-24">
         <circle
-          className="text-muted/30 dark:text-muted-dark/30"
+          className="text-gray-200 dark:text-gray-700 stroke-current"
           strokeWidth="5"
-          stroke="currentColor"
           fill="transparent"
           r="45"
           cx="50"
           cy="50"
         />
         <circle
-          className="text-primary/80 dark:text-primary-dark/80"
+          className="text-primary stroke-current"
           strokeWidth="5"
           strokeDasharray={2 * Math.PI * 45}
           strokeDashoffset={2 * Math.PI * 45 * (1 - value / max)}
           strokeLinecap="round"
-          stroke="currentColor"
           fill="transparent"
           r="45"
           cx="50"
@@ -57,12 +57,12 @@ const CircularProgress = ({ value, max, icon: Icon, label, unit }: {
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <Icon className="h-8 w-8 text-primary/80 dark:text-primary-dark/80" />
+        <Icon className="h-8 w-8 text-primary" />
       </div>
     </div>
     <div className="mt-2 text-center">
-      <div className="text-2xl font-semibold">{value}{unit}</div>
-      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="text-2xl font-semibold text-primary">{value}{unit}</div>
+      <div className="text-sm text-gray-600 dark:text-gray-300">{label}</div>
     </div>
   </div>
 )
@@ -88,15 +88,15 @@ const ProfileContent = () => {
 
   return (
     <Tabs defaultValue="personal" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="personal">Personal Info</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-        <TabsTrigger value="preferences">Preferences</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <TabsTrigger value="personal" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">Personal Info</TabsTrigger>
+        <TabsTrigger value="security" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">Security</TabsTrigger>
+        <TabsTrigger value="preferences" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">Preferences</TabsTrigger>
       </TabsList>
       <TabsContent value="personal">
-        <Card className="bg-white/80 dark:bg-card-dark/80 shadow-sm backdrop-blur-sm">
+        <Card className="bg-white dark:bg-gray-800 shadow-md">
           <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">Personal Information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center mb-6">
@@ -106,9 +106,9 @@ const ProfileContent = () => {
                   alt="Profile" 
                   width={100} 
                   height={100} 
-                  className="rounded-full"
+                  className="rounded-full border-4 border-primary"
                 />
-                <label htmlFor="profile-picture-upload" className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer">
+                <label htmlFor="profile-picture-upload" className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/80 transition-colors duration-200">
                   <Camera className="h-4 w-4" />
                   <input 
                     id="profile-picture-upload" 
@@ -119,67 +119,67 @@ const ProfileContent = () => {
                   />
                 </label>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">Click the camera icon to change your profile picture</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Click the camera icon to change your profile picture</p>
             </div>
             <form className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+                <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="bg-gray-50 dark:bg-gray-700" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-gray-50 dark:bg-gray-700" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                <Label htmlFor="location" className="text-gray-700 dark:text-gray-300">Location</Label>
+                <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} className="bg-gray-50 dark:bg-gray-700" />
               </div>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">Save Changes</Button>
             </form>
           </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="security">
-        <Card className="bg-white/80 dark:bg-card-dark/80 shadow-sm backdrop-blur-sm">
+        <Card className="bg-white dark:bg-gray-800 shadow-md">
           <CardHeader>
-            <CardTitle>Security Settings</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">Security Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span>Last password change</span>
-                <span className="text-muted-foreground">30 days ago</span>
+                <span className="text-gray-700 dark:text-gray-300">Last password change</span>
+                <span className="text-gray-500 dark:text-gray-400">30 days ago</span>
               </div>
               <div className="flex justify-between items-center">
-                <span>Two-factor authentication</span>
+                <span className="text-gray-700 dark:text-gray-300">Two-factor authentication</span>
                 <Switch checked={true} />
               </div>
-              <Button>Change Password</Button>
+              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">Change Password</Button>
             </div>
           </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="preferences">
-        <Card className="bg-white/80 dark:bg-card-dark/80 shadow-sm backdrop-blur-sm">
+        <Card className="bg-white dark:bg-gray-800 shadow-md">
           <CardHeader>
-            <CardTitle>User Preferences</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">User Preferences</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                  {darkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                  <span>Theme</span>
+                  {darkMode ? <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" /> : <Sun className="h-5 w-5 text-gray-700 dark:text-gray-300" />}
+                  <span className="text-gray-700 dark:text-gray-300">Theme</span>
                 </div>
                 <Switch checked={darkMode} onCheckedChange={setDarkMode} />
               </div>
               <div className="flex justify-between items-center">
-                <span>Notifications</span>
+                <span className="text-gray-700 dark:text-gray-300">Notifications</span>
                 <Switch checked={notifications} onCheckedChange={setNotifications} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <select id="language" className="w-full p-2 border rounded">
+                <Label htmlFor="language" className="text-gray-700 dark:text-gray-300">Language</Label>
+                <select id="language" className="w-full p-2 border rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                   <option value="en">English</option>
                   <option value="es">Español</option>
                   <option value="fr">Français</option>
@@ -201,7 +201,7 @@ interface NotificationCardProps {
 }
 
 const NotificationCard: React.FC<NotificationCardProps> = ({ icon: Icon, title, description, color }) => (
-  <Card className={`overflow-hidden ${color}`}>
+  <Card className={`overflow-hidden ${color} shadow-md hover:shadow-lg transition-shadow duration-200`}>
     <CardContent className="p-6">
       <div className="flex items-center space-x-4">
         <div className={`p-2 rounded-full ${color.replace('bg-', 'bg-opacity-20')} ${color.replace('bg-', 'text-')}`}>
@@ -209,7 +209,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ icon: Icon, title, 
         </div>
         <div>
           <h3 className="font-semibold text-lg">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{description}</p>
         </div>
       </div>
     </CardContent>
@@ -293,7 +293,6 @@ const NotificationsContent = () => (
 
 const AppointmentContent = () => {
   const [date, setDate] = useState<Date | undefined>(new Date())
-  const [selectedDoctor, setSelectedDoctor] = useState("")
   const [meetingType, setMeetingType] = useState("zoom")
 
   return (
@@ -322,7 +321,7 @@ const AppointmentContent = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="doctor">Select a Doctor</Label>
-              <Select onValueChange={setSelectedDoctor}>
+              <Select>
                 <SelectTrigger id="doctor">
                   <SelectValue placeholder="Select a doctor" />
                 </SelectTrigger>
@@ -625,14 +624,18 @@ const ConnectContent = () => {
 }
 
 export function DashboardComponent() {
-  const [showConnectOptions, setShowConnectOptions] = useState(false)
   const [activePage, setActivePage] = useState('Dashboard')
   const [userName, setUserName] = useState('Moni Roy')
   const [isEditingName, setIsEditingName] = useState(false)
   const [notificationCount, setNotificationCount] = useState(3)
   const [profilePicture, setProfilePicture] = useState('/placeholder.svg')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [darkMode, setDarkMode] = useState(false)
+
+  useEffect(() => {
+    // Initialize darkMode based on user preference or system setting
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    setDarkMode(isDarkMode)
+  }, [])
 
   useEffect(() => {
     if (darkMode) {
@@ -682,10 +685,6 @@ export function DashboardComponent() {
     return () => clearInterval(interval)
   }, [])
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
-
   const renderContent = () => {
     switch (activePage) {
       case 'Profile':
@@ -701,67 +700,35 @@ export function DashboardComponent() {
       default:
         return (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            <Card className="col-span-full bg-gradient-to-r from-primary/50 to-accent/50 dark:from-primary-dark/50 dark:to-accent-dark/50 text-foreground dark:text-foreground-dark">
-              <CardHeader>
-                <CardTitle className="text-lg lg:text-xl">Insole Pressure Map</CardTitle>
-              </CardHeader>
-              <CardContent className="flex justify-center">
-                <Image 
-                  src="/placeholder.svg?height=300&width=600" 
-                  alt="Insole Pressure Map" 
-                  width={600} 
-                  height={300} 
-                  className="rounded-lg w-full h-auto"
-                />
-              </CardContent>
-            </Card>
+            <div className="col-span-full">
+              <DiabetesMonitorComponent />
+            </div>
             
-            <Card className="bg-secondary/20 dark:bg-secondary-dark/20 text-foreground dark:text-foreground-dark">
-              <CardContent className="flex justify-center items-center h-full p-4">
-                <CircularProgress value={27} max={100} icon={Gauge} label="Pressure" unit="/100" />
-              </CardContent>
-            </Card>
+            <RadialPressureChart />
+            <TemperatureWidget />
+            <RuntimeWidget />
 
-            <Card className="bg-accent/20 dark:bg-accent-dark/20 text-foreground dark:text-foreground-dark">
-              <CardContent className="flex justify-center items-center h-full p-4">
-                <CircularProgress value={30} max={50} icon={Thermometer} label="Temperature" unit="°C" />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/80 dark:bg-card-dark/80 shadow-sm backdrop-blur-sm">
-              <CardContent className="flex justify-center items-center h-full p-4">
-                <CircularProgress value={154} max={300} icon={Clock} label="Runtime" unit="s" />
-              </CardContent>
-            </Card>
-
-            <Card className="col-span-full sm:col-span-2 bg-white/80 dark:bg-card-dark/80 shadow-sm backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg lg:text-xl">Temperature Over Time</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[200px] bg-muted rounded-lg flex items-center justify-center">
-                  <span className="text-lg lg:text-xl font-semibold text-muted-foreground">Temperature Graph</span>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="col-span-full sm:col-span-2 lg:col-span-3">
+              <FootUlcerRiskChart />
+            </div>
           </div>
         )
     }
   }
 
   return (
-    <div className="flex h-screen bg-background dark:bg-background-dark text-foreground dark:text-foreground-dark">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
-      <aside className="bg-primary/90 dark:bg-primary-dark/90 text-primary-foreground flex flex-col transition-all duration-300 ease-in-out">
+      <aside className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex flex-col transition-all duration-300 ease-in-out shadow-lg">
         {/* Mobile view: Icon-only sidebar */}
         <div className="lg:hidden flex flex-col items-center w-16 py-6 h-full">
-          <div className="bg-secondary dark:bg-secondary-dark text-secondary-foreground font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mb-8">
+          <div className="bg-primary text-primary-foreground font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mb-8">
             a
           </div>
           <nav className="flex-1 flex flex-col justify-between">
             <div className="space-y-6">
               {[
-                { name: 'Dashboard', icon: LayoutDashboard }, // Changed from User to LayoutDashboard
+                { name: 'Dashboard', icon: LayoutDashboard },
                 { name: 'Connect', icon: LinkIcon },
                 { name: 'Appointment', icon: CalendarIcon },
                 { name: 'Profile', icon: User },
@@ -772,8 +739,8 @@ export function DashboardComponent() {
                   onClick={() => handleNavClick(item.name)}
                   className={`p-3 rounded-lg transition-colors duration-200
                     ${activePage === item.name 
-                      ? 'bg-accent text-accent-foreground' 
-                      : 'text-primary-foreground hover:bg-primary-foreground/10'}`}
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                 >
                   <item.icon className="h-6 w-6" />
                 </button>
@@ -784,8 +751,8 @@ export function DashboardComponent() {
                 onClick={() => handleNavClick('Settings')}
                 className={`p-3 rounded-lg transition-colors duration-200
                   ${activePage === 'Settings'
-                    ? 'bg-accent text-accent-foreground' 
-                    : 'text-primary-foreground hover:bg-primary-foreground/10'}`}
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
               >
                 <Settings className="h-6 w-6" />
               </button>
@@ -820,14 +787,14 @@ export function DashboardComponent() {
         {/* Desktop view: Full sidebar */}
         <div className="hidden lg:flex flex-col w-64 p-6">
           <div className="flex items-center space-x-3 mb-8">
-            <div className="bg-secondary dark:bg-secondary-dark text-secondary-foreground font-bold text-2xl w-12 h-12 rounded-full flex items-center justify-center">
+            <div className="bg-primary text-primary-foreground font-bold text-2xl w-12 h-12 rounded-full flex items-center justify-center">
               a
             </div>
-            <span className="text-2xl font-bold">appo</span>
+            <span className="text-2xl font-bold text-primary">appo</span>
           </div>
           <nav className="space-y-2">
             {[
-              { name: 'Dashboard', icon: LayoutDashboard }, // Changed from User to LayoutDashboard
+              { name: 'Dashboard', icon: LayoutDashboard },
               { name: 'Connect', icon: LinkIcon },
               { name: 'Appointment', icon: CalendarIcon },
               { name: 'Profile', icon: User },
@@ -839,8 +806,8 @@ export function DashboardComponent() {
                 onClick={() => handleNavClick(item.name)}
                 className={`flex items-center space-x-4 w-full p-3 rounded-lg transition-colors duration-200
                   ${activePage === item.name 
-                    ? 'bg-accent text-accent-foreground' 
-                    : 'text-primary-foreground hover:bg-primary-foreground/10'}`}
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.name}</span>
@@ -876,22 +843,22 @@ export function DashboardComponent() {
           </div>
         </div>
 
-        {/* Update the dark mode toggle button */}
+        {/* Dark mode toggle button */}
         <button
           onClick={toggleDarkMode}
           className="mt-auto mb-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
         >
-          {darkMode ? <Sun className="h-6 w-6 text-gray-800 dark:text-gray-200" /> : <Moon className="h-6 w-6 text-gray-800 dark:text-gray-200" />}
+          {darkMode ? <Sun className="h-6 w-6 text-yellow-400" /> : <Moon className="h-6 w-6 text-gray-700" />}
         </button>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white/80 dark:bg-card-dark/80 p-4 shadow-sm backdrop-blur-sm">
+      <main className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-800 p-4 shadow-sm">
           <div className="flex justify-end items-center space-x-4">
             <button 
               onClick={handleNotificationClick}
-              className="relative bg-white p-2 rounded-full shadow-sm hover:bg-gray-100 transition-colors duration-200"
+              className="relative bg-gray-100 dark:bg-gray-700 p-2 rounded-full shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
             >
               <Bell className="h-5 w-5 text-primary" />
               {notificationCount > 0 && (
@@ -900,7 +867,7 @@ export function DashboardComponent() {
                 </span>
               )}
             </button>
-            <div className="flex items-center space-x-3 bg-white py-2 px-3 rounded-full shadow-sm">
+            <div className="flex items-center space-x-3 bg-gray-100 dark:bg-gray-700 py-2 px-3 rounded-full shadow-sm">
               <Image src={profilePicture} alt="User" width={32} height={32} className="rounded-full" />
               {isEditingName ? (
                 <form onSubmit={handleNameSubmit} className="flex items-center">
@@ -908,7 +875,7 @@ export function DashboardComponent() {
                     type="text"
                     value={userName}
                     onChange={handleNameChange}
-                    className="mr-2 text-sm"
+                    className="mr-2 text-sm bg-white dark:bg-gray-800"
                     autoFocus
                   />
                   <Button type="submit" size="sm">Save</Button>
@@ -924,11 +891,11 @@ export function DashboardComponent() {
             </div>
           </div>
           <div className="mt-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            <Input type="search" placeholder="Search" className="pl-10 bg-white w-full" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input type="search" placeholder="Search" className="pl-10 bg-gray-100 dark:bg-gray-700 w-full" />
           </div>
         </header>
-        <div className="flex-1 p-6 overflow-auto bg-background/50 dark:bg-background-dark/50 backdrop-blur-sm">
+        <div className="flex-1 p-6 overflow-auto">
           {renderContent()}
         </div>
       </main>
