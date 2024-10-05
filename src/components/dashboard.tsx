@@ -22,9 +22,10 @@ import { Lock, Globe, Shield, Smartphone } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { DiabetesMonitorComponent } from "@/components/diabetes-monitor"
 import { FootUlcerRiskChart } from "@/components/foot-ulcer-risk-chart"
-import { Component as RadialPressureChart } from "@/components/chart-radial-text"
 import { TemperatureWidget } from "@/components/temperature-widget"
-import { RuntimeWidget } from "@/components/runtime-widget"
+import { PressureTrackerComponent } from "@/components/pressure-tracker"
+import { FootprintWidgetComponent } from "@/components/footprint-widget"
+import { HealthStatsWidget } from "@/components/health-stats-widget"
 
 const CircularProgress = ({ value, max, icon: Icon, label, unit }: { 
   value: number; 
@@ -699,16 +700,20 @@ export function DashboardComponent() {
         return <ConnectContent />
       default:
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            <div className="col-span-full">
-              <DiabetesMonitorComponent />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="col-span-full lg:col-span-2 lg:row-span-2">
+              <FootprintWidgetComponent />
             </div>
             
-            <RadialPressureChart />
-            <TemperatureWidget />
-            <RuntimeWidget />
+            <div className="sm:col-span-2 lg:col-span-2 lg:row-span-1">
+              <PressureTrackerComponent />
+            </div>
 
-            <div className="col-span-full sm:col-span-2 lg:col-span-3">
+            <div className="sm:col-span-2 lg:col-span-2 lg:row-span-1">
+              <HealthStatsWidget />
+            </div>
+
+            <div className="col-span-full">
               <FootUlcerRiskChart />
             </div>
           </div>

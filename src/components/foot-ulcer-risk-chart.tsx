@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
 
 import {
   Card,
@@ -9,78 +9,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
 
-const chartData = [
-  { hour: "00:00", risk: 2 },
-  { hour: "04:00", risk: 1 },
-  { hour: "08:00", risk: 3 },
-  { hour: "12:00", risk: 5 },
-  { hour: "16:00", risk: 4 },
-  { hour: "20:00", risk: 3 },
+const data = [
+  { hour: "00:00", heel: 30, middle: 40, toe: 50 },
+  { hour: "01:00", heel: 35, middle: 45, toe: 55 },
+  { hour: "02:00", heel: 40, middle: 50, toe: 60 },
+  { hour: "03:00", heel: 45, middle: 55, toe: 65 },
+  { hour: "04:00", heel: 50, middle: 60, toe: 70 },
+  { hour: "05:00", heel: 55, middle: 65, toe: 75 },
+  { hour: "06:00", heel: 60, middle: 70, toe: 80 },
+  { hour: "07:00", heel: 65, middle: 75, toe: 85 },
+  // Add more hours as needed
 ]
-
-const chartConfig = {
-  risk: {
-    label: "Risk",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig
 
 export function FootUlcerRiskChart() {
   return (
-    <Card>
+    <Card className="w-full bg-black text-white">
       <CardHeader>
-        <CardTitle>Foot Ulcer Risk Over 24 Hours</CardTitle>
-        <CardDescription>Risk level (1-5) at different times of day</CardDescription>
+        <CardTitle className="text-center">Foot Ulcer Risk Over Time</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 20,
-              left: 20,
-              bottom: 20,
-            }}
-            barSize={30}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="hour"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
+      <CardContent className="p-4">
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <XAxis dataKey="hour" stroke="#888888" />
+            <YAxis stroke="#888888" />
+            <Tooltip
+              contentStyle={{ backgroundColor: "#333", border: "none" }}
+              labelStyle={{ color: "#fff" }}
             />
-            <YAxis
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              domain={[0, 5]}
-              ticks={[0, 1, 2, 3, 4, 5]}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="risk" fill="var(--color-risk)" radius={4}>
-              <LabelList
-                dataKey="risk"
-                position="top"
-                offset={10}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Bar>
+            <Legend />
+            <Bar dataKey="heel" fill="#3b82f6" name="Heel" barSize={10} />
+            <Bar dataKey="middle" fill="#eab308" name="Middle" barSize={10} />
+            <Bar dataKey="toe" fill="#22c55e" name="Toe" barSize={10} />
           </BarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   )
