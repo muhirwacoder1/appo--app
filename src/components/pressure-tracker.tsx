@@ -19,7 +19,7 @@ interface BluetoothConfig {
 }
 
 export function PressureTrackerComponent() {
-  const { isConnected, setIsConnected } = useConnection()
+  const { isConnected, setIsConnected, setConnectionType } = useConnection()
   const [readings, setReadings] = useState<PressureReading[]>([
     { label: "Heel", color: "blue", value: 120 },
     { label: "Middle", color: "yellow", value: 80 },
@@ -48,11 +48,13 @@ export function PressureTrackerComponent() {
   const handleWifiConnect = () => {
     if (wifiCredentials.ssid === 'appoltd' && wifiCredentials.password === 'appo12') {
       setIsConnected(true)
+      setConnectionType('wifi')
       setNotificationMessage('Connected Successfully to WiFi')
       setNotificationColor('bg-green-500')
       setShowNotification(true)
     } else {
       setIsConnected(false)
+      setConnectionType(null)
       setNotificationMessage('Invalid WiFi Credentials')
       setNotificationColor('bg-red-500')
       setShowNotification(true)
@@ -90,12 +92,14 @@ export function PressureTrackerComponent() {
     if (bluetoothDevice.deviceName === 'galaxyA54') {
       setIsBluetoothConnected(true)
       setIsConnected(true)
+      setConnectionType('bluetooth')
       setNotificationMessage('Connected to galaxyA54')
       setNotificationColor('bg-green-500')
       setShowNotification(true)
     } else {
       setIsBluetoothConnected(false)
       setIsConnected(false)
+      setConnectionType(null)
       setNotificationMessage('Invalid device name. Please use galaxyA54')
       setNotificationColor('bg-red-500')
       setShowNotification(true)

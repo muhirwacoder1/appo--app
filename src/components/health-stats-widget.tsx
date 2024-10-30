@@ -10,7 +10,7 @@ interface HealthStats {
 }
 
 export function HealthStatsWidget() {
-  const { isConnected } = useConnection()
+  const { isConnected, connectionType } = useConnection()
   const [stats, setStats] = useState<HealthStats>({
     heartRate: 72,
     temperature: 36.6
@@ -27,10 +27,11 @@ export function HealthStatsWidget() {
 
     if (isConnected) {
       interval = setInterval(() => {
-        setStats({
-          heartRate: getRandomValue(60, 100),
+        setStats(prev => ({
+          // If connected via Bluetooth, heart rate is 0
+          heartRate: connectionType === 'bluetooth' ? 0 : getRandomValue(60, 100),
           temperature: getRandomValue(35.5, 37.7, 1)
-        })
+        }))
       }, 5000)
     } else {
       // Reset to static values when disconnected
@@ -43,13 +44,13 @@ export function HealthStatsWidget() {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isConnected])
+  }, [isConnected, connectionType])
 
   return (
     <Card className="w-full bg-black text-white">
       <CardHeader className="p-3">
         <CardTitle className="text-center text-lg">
-          Health Stats {isConnected ? '(Live)' : '(Not Connected)'}
+          Health Stats {isConnected ? `(${connectionType === 'bluetooth' ? 'Bluetooth' : 'WiFi'})` : '(Not Connected)'}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3">
