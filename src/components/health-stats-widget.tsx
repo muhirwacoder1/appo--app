@@ -1,76 +1,94 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useConnection } from '@/context/ConnectionContext'
 import { Heart, Thermometer } from 'lucide-react'
 
+interface HealthStats {
+  heartRate: number
+  temperature: number
+}
+
 export function HealthStatsWidget() {
-  const [healthValues, setHealthValues] = useState({
+  const { isConnected } = useConnection()
+  const [stats, setStats] = useState<HealthStats>({
     heartRate: 72,
     temperature: 36.6
   })
 
+  // Function to generate random values
+  const getRandomValue = (min: number, max: number, decimals: number = 0) => {
+    const value = Math.random() * (max - min) + min
+    return Number(value.toFixed(decimals))
+  }
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setHealthValues({
-        heartRate: Math.floor(Math.random() * (85 - 65) + 65),
-        temperature: Number((Math.random() * (37.2 - 36.2) + 36.2).toFixed(1))
+    let interval: NodeJS.Timeout | null = null
+
+    if (isConnected) {
+      interval = setInterval(() => {
+        setStats({
+          heartRate: getRandomValue(60, 100),
+          temperature: getRandomValue(35.5, 37.7, 1)
+        })
+      }, 5000)
+    } else {
+      // Reset to static values when disconnected
+      setStats({
+        heartRate: 72,
+        temperature: 36.6
       })
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const healthData = [
-    { 
-      label: "Heart Rate", 
-      icon: Heart, 
-      iconClass: "text-red-500",
-      textClass: "text-red-500",
-      bgClass: "bg-red-500",
-      value: healthValues.heartRate, 
-      unit: "bpm",
-      maxValue: 120
-    },
-    { 
-      label: "Temperature", 
-      icon: Thermometer, 
-      iconClass: "text-blue-500",
-      textClass: "text-blue-500",
-      bgClass: "bg-blue-500",
-      value: healthValues.temperature, 
-      unit: "°C",
-      maxValue: 40
     }
-  ]
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [isConnected])
 
   return (
-    <Card className="w-full h-full bg-black text-white">
-      <CardHeader className="p-4">
-        <CardTitle className="text-center text-lg">Health Stats</CardTitle>
+    <Card className="w-full bg-black text-white">
+      <CardHeader className="p-3">
+        <CardTitle className="text-center text-lg">
+          Health Stats {isConnected ? '(Live)' : '(Not Connected)'}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         <div className="grid grid-cols-2 gap-4">
-          {healthData.map((item, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <item.icon className={`w-8 h-8 ${item.iconClass} mb-2`} />
-              <div className={`text-2xl font-bold ${item.textClass}`}>
-                {item.value}
-              </div>
-              <div className="text-xs text-gray-400">{item.unit}</div>
-              <div className={`text-sm mt-1 ${item.textClass}`}>
-                {item.label}
-              </div>
-              <div className="w-full mt-2 bg-gray-700 rounded-full h-1.5">
-                <div 
-                  className={`${item.bgClass} h-1.5 rounded-full transition-all duration-300`} 
-                  style={{
-                    width: `${(item.value / item.maxValue) * 100}%`
-                  }}
-                />
+          {/* Heart Rate */}
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2">
+              <Heart className="h-5 w-5 text-red-500" />
+              <div className="text-xl font-bold text-red-500">
+                {stats.heartRate}
               </div>
             </div>
-          ))}
+            <div className="text-xs text-gray-400">bpm</div>
+            <div className="text-xs mt-1 text-red-500">Heart Rate</div>
+            <div className="w-full mt-2 bg-gray-700 rounded-full h-1.5">
+              <div 
+                className="bg-red-500 h-1.5 rounded-full transition-all duration-300"
+                style={{width: `${(stats.heartRate / 200) * 100}%`}}
+              />
+            </div>
+          </div>
+
+          {/* Temperature */}
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2">
+              <Thermometer className="h-5 w-5 text-blue-500" />
+              <div className="text-xl font-bold text-blue-500">
+                {stats.temperature}
+              </div>
+            </div>
+            <div className="text-xs text-gray-400">°C</div>
+            <div className="text-xs mt-1 text-blue-500">Temperature</div>
+            <div className="w-full mt-2 bg-gray-700 rounded-full h-1.5">
+              <div 
+                className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+                style={{width: `${((stats.temperature - 35) / 5) * 100}%`}}
+              />
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

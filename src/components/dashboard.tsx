@@ -20,9 +20,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Lock, Globe, Shield, Smartphone } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { DiabetesMonitorComponent } from "@/components/diabetes-monitor"
+
 import { FootUlcerRiskChart } from "@/components/foot-ulcer-risk-chart"
-import { TemperatureWidget } from "@/components/temperature-widget"
+
 import { PressureTrackerComponent } from "@/components/pressure-tracker"
 import { FootprintWidgetComponent } from "@/components/footprint-widget"
 import { HealthStatsWidget } from "@/components/health-stats-widget"
@@ -700,19 +700,23 @@ export function DashboardComponent() {
         return <ConnectContent />
       default:
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="col-span-full lg:col-span-2 lg:row-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* First row - FootprintWidget centered */}
+            <div className="col-span-full md:col-span-2 md:col-start-2 lg:col-start-2 lg:col-span-2">
               <FootprintWidgetComponent />
             </div>
             
-            <div className="sm:col-span-2 lg:col-span-2 lg:row-span-1">
+            {/* Second row - Pressure Tracker with Connections */}
+            <div className="col-span-full">
               <PressureTrackerComponent />
             </div>
 
-            <div className="sm:col-span-2 lg:col-span-2 lg:row-span-1">
+            {/* Third row - Health Stats */}
+            <div className="col-span-full">
               <HealthStatsWidget />
             </div>
 
+            {/* Fourth row - Risk Chart */}
             <div className="col-span-full">
               <FootUlcerRiskChart />
             </div>
