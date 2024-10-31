@@ -38,6 +38,7 @@ export function PressureTrackerComponent() {
   })
   const [isScanning, setIsScanning] = useState(false)
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false)
+  const [isFlashing, setIsFlashing] = useState(false)
 
   // Function to generate random values
   const getRandomValue = (min: number, max: number) => {
@@ -106,6 +107,22 @@ export function PressureTrackerComponent() {
     }
     setTimeout(() => setShowNotification(false), 3000)
   }
+
+  // Flash effect for WiFi connection
+  useEffect(() => {
+    let flashInterval: NodeJS.Timeout | null = null
+    if (isConnected && connectionType === 'wifi') {
+      flashInterval = setInterval(() => {
+        setIsFlashing(prev => !prev)
+      }, 1000)
+    } else {
+      setIsFlashing(false)
+    }
+
+    return () => {
+      if (flashInterval) clearInterval(flashInterval)
+    }
+  }, [isConnected, connectionType])
 
   // Update readings every 5 seconds when connected
   useEffect(() => {
@@ -229,8 +246,14 @@ export function PressureTrackerComponent() {
           <div className="grid grid-cols-3 gap-4">
             {readings.map((item, index) => (
               <div key={index} className="flex flex-col items-center">
-                <div className={`text-xl font-bold text-${item.color}-500`}>
+                <div className={`text-xl font-bold flex items-center gap-2 ${
+                  connectionType === 'bluetooth' ? 'text-red-500' : `text-${item.color}-500`
+                }`}>
                   {item.value}
+                  {connectionType === 'wifi' && (
+                    <div className={`h-2 w-2 rounded-full ${isFlashing ? 'bg-red-500' : 'bg-transparent'}`} 
+                         style={{ transition: 'background-color 0.3s ease-in-out' }} />
+                  )}
                 </div>
                 <div className="text-xs text-gray-400">mmHg</div>
                 <div className={`text-xs mt-1 text-${item.color}-500`}>
@@ -238,7 +261,7 @@ export function PressureTrackerComponent() {
                 </div>
                 <div className="w-full mt-2 bg-gray-700 rounded-full h-1.5">
                   <div 
-                    className={`bg-${item.color}-500 h-1.5 rounded-full transition-all duration-300`} 
+                    className={`${connectionType === 'bluetooth' ? 'bg-red-500' : `bg-${item.color}-500`} h-1.5 rounded-full transition-all duration-300`} 
                     style={{width: `${(item.value / 150) * 100}%`}}
                   />
                 </div>
