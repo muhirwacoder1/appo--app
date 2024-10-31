@@ -19,7 +19,7 @@ interface BluetoothConfig {
 }
 
 export function PressureTrackerComponent() {
-  const { isConnected, setIsConnected, setConnectionType } = useConnection()
+  const { isConnected, setIsConnected, setConnectionType, connectionType } = useConnection()
   const [readings, setReadings] = useState<PressureReading[]>([
     { label: "Heel", color: "blue", value: 120 },
     { label: "Middle", color: "yellow", value: 80 },
@@ -113,11 +113,21 @@ export function PressureTrackerComponent() {
 
     if (isConnected) {
       interval = setInterval(() => {
-        setReadings([
-          { label: "Heel", color: "blue", value: getRandomValue(100, 140) },
-          { label: "Middle", color: "yellow", value: getRandomValue(70, 90) },
-          { label: "Toe", color: "green", value: getRandomValue(80, 100) }
-        ])
+        if (connectionType === 'bluetooth') {
+          // Bluetooth connection: values between 30-40
+          setReadings([
+            { label: "Heel", color: "blue", value: getRandomValue(30, 40) },
+            { label: "Middle", color: "yellow", value: getRandomValue(30, 40) },
+            { label: "Toe", color: "green", value: getRandomValue(30, 40) }
+          ])
+        } else {
+          // WiFi connection: original ranges
+          setReadings([
+            { label: "Heel", color: "blue", value: getRandomValue(100, 140) },
+            { label: "Middle", color: "yellow", value: getRandomValue(70, 90) },
+            { label: "Toe", color: "green", value: getRandomValue(80, 100) }
+          ])
+        }
       }, 5000)
     } else {
       // Reset to static values when disconnected
@@ -131,7 +141,7 @@ export function PressureTrackerComponent() {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isConnected])
+  }, [isConnected, connectionType])
 
   return (
     <div className="flex flex-col gap-6">

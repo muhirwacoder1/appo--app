@@ -22,6 +22,17 @@ export function HealthStatsWidget() {
     return Number(value.toFixed(decimals))
   }
 
+  // Function to calculate progress bar width based on connection type
+  const calculateTemperatureWidth = (value: number): string => {
+    if (connectionType === 'bluetooth') {
+      // For Bluetooth: range is 42-49
+      return `${((value - 42) / (49 - 42)) * 100}%`
+    } else {
+      // For WiFi: range is 35.5-37.7
+      return `${((value - 35.5) / (37.7 - 35.5)) * 100}%`
+    }
+  }
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
@@ -30,7 +41,10 @@ export function HealthStatsWidget() {
         setStats(prev => ({
           // If connected via Bluetooth, heart rate is 0
           heartRate: connectionType === 'bluetooth' ? 0 : getRandomValue(60, 100),
-          temperature: getRandomValue(35.5, 37.7, 1)
+          // If connected via Bluetooth, temperature is between 42-49
+          temperature: connectionType === 'bluetooth' 
+            ? getRandomValue(42, 49, 1)
+            : getRandomValue(35.5, 37.7, 1)
         }))
       }, 5000)
     } else {
@@ -86,7 +100,7 @@ export function HealthStatsWidget() {
             <div className="w-full mt-2 bg-gray-700 rounded-full h-1.5">
               <div 
                 className="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
-                style={{width: `${((stats.temperature - 35) / 5) * 100}%`}}
+                style={{width: calculateTemperatureWidth(stats.temperature)}}
               />
             </div>
           </div>
