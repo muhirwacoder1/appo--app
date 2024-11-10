@@ -1,8 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-export default function ClientOnly({ children, ...delegated }) {
+interface ClientOnlyProps {
+  children: React.ReactNode;
+  [key: string]: any;
+}
+
+export default function ClientOnly({ children, ...delegated }: ClientOnlyProps) {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
@@ -13,5 +18,9 @@ export default function ClientOnly({ children, ...delegated }) {
     return null
   }
 
-  return <div {...delegated}>{children}</div>
+  return (
+    <div {...delegated}>
+      {children}
+    </div>
+  )
 }

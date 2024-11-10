@@ -1,10 +1,13 @@
 import ClientOnly from '@/components/ClientOnly'
-import { DashboardComponent } from '@/components/dashboard'
+import Dashboard from '@/components/dashboard/index'
+import { ConnectionProvider } from '@/context/ConnectionContext'
 
 export default function Home() {
   return (
     <ClientOnly>
-      <DashboardComponent />
+      <ConnectionProvider>
+        <Dashboard />
+      </ConnectionProvider>
     </ClientOnly>
   )
 }

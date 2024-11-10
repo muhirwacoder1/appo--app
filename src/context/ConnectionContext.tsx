@@ -1,26 +1,25 @@
 'use client'
-import { createContext, useContext, useState, ReactNode } from 'react'
 
-type ConnectionType = 'wifi' | 'bluetooth' | null;
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 interface ConnectionContextType {
-  isConnected: boolean
-  setIsConnected: (value: boolean) => void
-  connectionType: ConnectionType
-  setConnectionType: (value: ConnectionType) => void
+  isConnected: boolean;
+  connectionType: string | null;
+  setIsConnected: (connected: boolean) => void;
+  setConnectionType: (type: string | null) => void;
 }
 
 const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined)
 
 export function ConnectionProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
-  const [connectionType, setConnectionType] = useState<ConnectionType>(null)
+  const [connectionType, setConnectionType] = useState<string | null>('bluetooth')
 
   return (
     <ConnectionContext.Provider value={{ 
       isConnected, 
+      connectionType,
       setIsConnected, 
-      connectionType, 
       setConnectionType 
     }}>
       {children}

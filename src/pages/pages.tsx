@@ -1,7 +1,12 @@
-import { DashboardComponent } from "@/components/dashboard"
+'use client'
 
-export default function Home() {
+import { ConnectionProvider } from '@/context/ConnectionContext'
+import Dashboard from '@/components/dashboard/index'
+
+export default function Pages() {
   return (
-    <DashboardComponent />
+    <ConnectionProvider>
+      <Dashboard />
+    </ConnectionProvider>
   )
 }
